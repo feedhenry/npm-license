@@ -57,6 +57,8 @@ You can also specify `--unknown` to only show licenses that it can't determine o
 
 Also supports `--json /path/to/save.json` to export the data.
 
+To view all dependencies grouped by their license, specify `--groupedjson`
+
 Requiring
 ---------
 

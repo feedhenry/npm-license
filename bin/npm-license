@@ -12,13 +12,32 @@ var args = require('../lib/args').parse();
 var mkdirp = require('mkdirp');
 var path = require('path');
 var fs = require('fs');
+var _ = require('underscore');
 
 checker.init(args, function(json) {
     if (args.json) {
         var dir = path.dirname(args.json);
         mkdirp.sync(dir);
         fs.writeFileSync(args.json, JSON.stringify(json, null, 4) + '\n', 'utf8');
-        console.log('file written', args.json);
+        console.log('file writtens', args.json);
+    } else if (args.groupedjson) {
+        var grouped = {};
+        _(_.keys(json)).map(function(key) {
+          var licenses = json[key].licenses;
+          if (licenses == null || licenses === '') {
+            grouped.unknown = grouped.unknown || [];
+            grouped.unknown.push(key);
+          } else {
+            if (!(licenses instanceof Array)) {
+              licenses = [licenses];
+            }
+            _(licenses).each(function(license) {
+              grouped[license] = grouped[license] || [];
+              grouped[license].push(key);
+            });
+          }
+        });
+        console.log(JSON.stringify(grouped, true, 2));
     } else {
         checker.print(json);
     }
