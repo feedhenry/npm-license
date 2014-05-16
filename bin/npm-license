@@ -38,6 +38,24 @@ checker.init(args, function(json) {
           }
         });
         console.log(JSON.stringify(grouped, true, 2));
+    } else if (args.tabs) {
+      var packageJson = require(path.join(process.cwd(), 'package.json'));
+      _(_.keys(json)).each(function(key) {
+        var module = json[key];
+        var nameAndVersion = key.split('@');
+        //console.log(packageJson.name, nameAndVersion[0]);
+        if (packageJson.name === nameAndVersion[0]) {
+          return; // components own license. omit
+        }
+        var license = module.licenses;
+        if (license == null || license == '') {
+          license = 'UNKNOWN';
+        } else if (license instanceof Array) {
+          license = license.join(',');
+        }
+        console.log([packageJson.name, nameAndVersion[0], nameAndVersion[1], license, 'module', '', module.repository].join('\t'));
+      });
+
     } else {
         checker.print(json);
     }
